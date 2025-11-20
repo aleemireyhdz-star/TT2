@@ -18,7 +18,7 @@ df = pd.DataFrame(precipitaciones_sinteticas, columns=["Precipitación_mm"])
 df = df[df["Precipitación_mm"] > 0]
 
 # Parámetro adicional: área inundable (este es un dato constante basado en tu dataset)
-area_inundable = 80  # Porcentaje de área inundable (por ejemplo, 80% como un valor de ejemplo)
+area_inundable = 100  # Porcentaje de área inundable (valor del 100%)
 
 # Agregar área inundable como columna constante en el DataFrame
 df["Área_Inundable_%"] = area_inundable
