@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 # 1) Cargar el modelo ya entrenado
-modelo = load("src/modelo_riesgo.pkl")
+modelo = load("src/modelo_predictivo.pkl")
 
 def predecir_riesgo(precipitacion_mm: float, area_inundable: float = 100.0):
     """

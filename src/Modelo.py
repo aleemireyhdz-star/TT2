@@ -65,6 +65,6 @@ plt.show()
 
 # 8) Guardar el modelo entrenado en un archivo .pkl dentro de la misma carpeta del script
 script_dir = Path(__file__).resolve().parent
-model_path = script_dir / "modelo_riesgo.pkl"
+model_path = script_dir / "modelo_predictivo.pkl"
 dump(modelo, model_path)
-print(f"\nModelo guardado como: 'modelo_riesgo.pkl'")
+print(f"\nModelo guardado como: 'modelo_predictivo.pkl'")
