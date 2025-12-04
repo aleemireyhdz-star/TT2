@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌊 Sistema de Alerta de Inundaciones - CDMX</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌊 Sistema de Alerta de Inundaciones</h1>
+            <p class="subtitle">Ciudad de México - Monitoreo en Tiempo Real</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Columna izquierda: Mapa -->
+            <div class="left-column">
+                <div class="card map-card">
+                    <h2>📍 Ubicación Actual</h2>
+                    <div id="map"></div>
+                    <div class="coordinates">
+                        <p><strong>Latitud:</strong> <span id="lat">--</span>°</p>
+                        <p><strong>Longitud:</strong> <span id="lon">--</span>°</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha: Dashboard -->
+            <div class="right-column">
+                <!-- Semáforo de Alerta -->
+                <div class="card alert-card">
+                    <h2>🚨 Estado de Alerta</h2>
+                    <div class="semaforo">
+                        <div class="luz" id="luz-alerta">
+                            <div class="circulo gris"></div>
+                        </div>
+                        <div class="texto-alerta">
+                            <p class="alerta-label" id="alerta-label">ESPERANDO...</p>
+                            <p class="alerta-description" id="alerta-description">Inicializando sistema...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información del Sensor -->
+                <div class="card sensor-card">
+                    <h2>📡 Información del Sensor</h2>
+                    <div class="sensor-info">
+                        <div class="sensor-item">
+                            <label>Nivel del Sensor:</label>
+                            <span id="nivel-sensor" class="sensor-value">-</span>/3
+                        </div>
+                        <div class="sensor-item">
+                            <label>Riesgo de Zona:</label>
+                            <span id="riesgo-zona" class="sensor-value">--</span>
+                        </div>
+                        <div class="sensor-item">
+                            <label>Score de Riesgo:</label>
+                            <span id="riesgo-score" class="sensor-value">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leyenda -->
+                <div class="card legend-card">
+                    <h3>📋 Significado de Alertas</h3>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color verde"></div>
+                            <p><strong>VERDE:</strong> Condiciones normales</p>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color amarillo"></div>
+                            <p><strong>AMARILLO:</strong> Precaución - Monitoreo continuo</p>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color rojo"></div>
+                            <p><strong>ROJO:</strong> Peligro - Medidas de seguridad inmediatas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historial -->
+        <div class="card history-card">
+            <h2>📊 Historial de Eventos</h2>
+            <div id="historial" class="historial">
+                <p class="empty-state">No hay eventos registrados aún...</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Estado: <span id="status-indicator" class="status-dot online"></span> <span id="status-text">En línea</span></p>
+            <p>Última actualización: <span id="last-update">--:--:--</span></p>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
