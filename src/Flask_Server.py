@@ -19,11 +19,11 @@ def ingest():
         
         # Mapear voltaje a nivel de sensor (0-3)
         # Asumiendo rangos: 0-0.75V=0, 0.75-1.5V=1, 1.5-2.25V=2, 2.25-3V=3
-        if v <= 0.75:
+        if v <= 0.683:
             nivel_sensor = 0
-        elif v <= 1.5:
+        elif v <= 0.759:
             nivel_sensor = 1
-        elif v <= 2.25:
+        elif v <= 0.812:
             nivel_sensor = 2
         else:
             nivel_sensor = 3
@@ -32,7 +32,8 @@ def ingest():
         resultado = predecir_alerta(nivel_sensor)
         
         app.logger.info(f"🚨 Nivel sensor: {nivel_sensor} → Alerta: {resultado['alerta']}")
-        
+        app.logger.info(f"Detalles de la predicción: {resultado}")
+
     else:
         app.logger.info(f"Datos recibidos inválidos o vacíos: {data}")
     
@@ -49,3 +50,4 @@ if __name__ == "__main__":
     app.logger.info("Iniciando servidor Flask (reloader desactivado para evitar cargas duplicadas)...")
     app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
     
+

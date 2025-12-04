@@ -34,6 +34,8 @@ def validar_coordenadas_cdmx(latitud, longitud):
 def obtener_riesgo_zona(latitud, longitud):
     """
     Predice el riesgo de zona basado en coordenadas geográficas.
+    Primero busca en el dataset si la coordenada exacta existe (con tolerancia).
+    Si no, usa el modelo de predicción.
     
     Args:
         latitud (float): Latitud de la ubicación
@@ -48,7 +50,22 @@ def obtener_riesgo_zona(latitud, longitud):
         print(f"📍 Rango válido: Lat 19.35-19.65, Lon -99.35 a -98.95")
         print(f"🤖 La predicción puede no ser confiable para ubicaciones fuera de CDMX")
     
-    # Crear DataFrame con nombres de columnas correctos para evitar warnings
+    # MEJORA: Primero buscar en el dataset si existe esta coordenada exacta
+    # Tolerancia de ±0.0001 grados (≈ 10 metros)
+    dataset = pd.read_csv(script_dir / "dataset_procesado.csv")
+    coincidencia = dataset[
+        (abs(dataset['latitud'] - latitud) < 0.0001) & 
+        (abs(dataset['longitud'] - longitud) < 0.0001)
+    ]
+    
+    if not coincidencia.empty:
+        # Si encontramos la coordenada en el dataset, usar su valor real
+        riesgo_score = coincidencia['riesgo_zona_score'].iloc[0]
+        print(f"🎯 Coordenada encontrada en dataset → Score: {riesgo_score:.1f}")
+        return riesgo_score
+    
+    # Si no está en el dataset, usar el modelo de predicción
+    print(f"🔮 Coordenada no en dataset → Usando modelo de predicción")
     input_data = pd.DataFrame([[latitud, longitud]], columns=['latitud', 'longitud'])
     riesgo_score = modelo.predict(input_data)[0]
     return riesgo_score
@@ -70,9 +87,19 @@ def clasificar_riesgo_zona(riesgo_score):
     else:
         return 'ALTO'
 
-# Coordenadas hardcoded por el momento
-LATITUD_FIJA = 19.5061618036
-LONGITUD_FIJA = -99.1047492201
+# Coordenadas hardcoded BAJA
+#LATITUD_FIJA = 19.5061618036
+#LONGITUD_FIJA = -99.1047492201
+# Coordenadas hardcoded ALTA 19.5228166649,-99.1678551529
+#LATITUD_FIJA = 19.5228166649
+#LONGITUD_FIJA = -99.1678551529
+# Coordenadas UPIITA 19.5113119,-99.1251155
+#LATITUD_FIJA = 19.5113119
+#LONGITUD_FIJA = -99.1251155
+#Coordenada hardcoded MEDIA 19.5041017692,-99.0986932319
+LATITUD_FIJA = 19.5041017692
+LONGITUD_FIJA = -99.0986932319
+
 
 def predecir_alerta(nivel_sensor):
     """
