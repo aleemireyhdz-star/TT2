@@ -15,6 +15,8 @@ const emojis = {
 document.addEventListener('DOMContentLoaded', () => {
     inicializarMapa();
     inicializarActualizaciones();
+    setupCoordsForm();
+    fetchCoords();
 });
 
 // Inicializar el mapa con Leaflet
@@ -259,4 +261,70 @@ function mostrarNotificacion(titulo, opciones) {
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(titulo, opciones);
     }
+}
+
+// Obtener coordenadas guardadas en el servidor y actualizar inputs/mapa
+async function fetchCoords() {
+    try {
+        const resp = await fetch('/api/coords');
+        if (!resp.ok) return;
+        const coords = await resp.json();
+        const latEl = document.getElementById('input-lat');
+        const lonEl = document.getElementById('input-lon');
+        if (latEl && lonEl && coords) {
+            latEl.value = coords.latitud;
+            lonEl.value = coords.longitud;
+            // Actualizar UI y mapa con las coordenadas actuales
+            document.getElementById('lat').textContent = coords.latitud.toFixed(6);
+            document.getElementById('lon').textContent = coords.longitud.toFixed(6);
+            actualizarMapa(coords);
+        }
+    } catch (err) {
+        console.warn('No se pudieron obtener coordenadas:', err);
+    }
+}
+
+// Configurar el formulario de coordenadas y guardar en servidor
+function setupCoordsForm() {
+    const btn = document.getElementById('save-coords');
+    if (!btn) return;
+
+    btn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        const latEl = document.getElementById('input-lat');
+        const lonEl = document.getElementById('input-lon');
+        const msg = document.getElementById('coords-message');
+        const lat = parseFloat(latEl.value);
+        const lon = parseFloat(lonEl.value);
+
+        if (!isFinite(lat) || !isFinite(lon)) {
+            msg.textContent = 'Latitud/Longitud inválidas';
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/coords', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat, lon })
+            });
+            const data = await resp.json();
+            if (resp.ok && data.ok) {
+                msg.textContent = 'Coordenadas guardadas correctamente';
+                setTimeout(() => { msg.textContent = ''; }, 3000);
+
+                // Actualizar UI local y pedir nuevo estado
+                const coords = { latitud: lat, longitud: lon };
+                document.getElementById('lat').textContent = lat.toFixed(6);
+                document.getElementById('lon').textContent = lon.toFixed(6);
+                actualizarMapa(coords);
+                actualizarEstado();
+            } else {
+                msg.textContent = data.error || 'Error al guardar coordenadas';
+            }
+        } catch (err) {
+            console.error(err);
+            msg.textContent = 'Error de red al guardar coordenadas';
+        }
+    });
 }
