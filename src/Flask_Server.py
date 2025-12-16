@@ -46,7 +46,6 @@ def ingest():
         app.logger.info(f"v={v:.3f} V | pct={pct:.2f} %")
         
         # Mapear voltaje a nivel de sensor (0-3)
-        # Asumiendo rangos: 0-0.75V=0, 0.75-1.5V=1, 1.5-2.25V=2, 2.25-3V=3
         if v <= 0.695:
             nivel_sensor = 0
         elif v <= 0.759:
