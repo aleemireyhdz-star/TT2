@@ -8,6 +8,10 @@ Prototipo académico IoT que conecta un sensor de nivel de agua con una interfaz
 
 Desarrollado por un equipo de tres integrantes de Ingeniería Mecatrónica en UPIITA–IPN, desde 2024 hasta la defensa final en enero de 2026. Título académico original: *Sistema de detección de inundaciones con predicción inteligente y sensores IoT*.
 
+![Integración electrónica y de alimentación dentro del gabinete del prototipo](docs/assets/electronics-integration.jpg)
+
+*Prototipo del equipo: controlador de carga, batería, placas ESP32, interfaz SD, convertidores y cableado. La fotografía documenta el montaje; no establece autonomía ni la revisión de software cargada.*
+
 ## Trabajo de ingeniería
 
 - **Adquisición:** una ESP32 mide la señal de un sensor de 4–20 mA mediante una resistencia de 150 Ω, promedia 1000 lecturas ADC y registra voltaje y porcentaje en una tarjeta SD.
@@ -24,6 +28,21 @@ Desarrollado por un equipo de tres integrantes de Ingeniería Mecatrónica en UP
 | Colaboración | Integración, publicación/documentación del repositorio y participación en cambios de visualización. |
 
 El backend/modelo y el código principal y soporte 3D del seguidor fueron principalmente aportaciones de compañeros. Se presenta el sistema del equipo y se identifica la contribución de Emiliano.
+
+<details>
+<summary>Montaje de prueba con agua y distribución de componentes de PCB</summary>
+
+![Sensor de nivel sumergido en un recipiente de prueba de laboratorio](docs/assets/water-sensor-test.jpg)
+
+*Sensor de nivel en un recipiente de laboratorio. La imagen documenta un montaje de prueba, en lugar de una altura medida, curva de calibración o resultado de incertidumbre.*
+
+![Distribución de componentes de la placa del prototipo](docs/assets/pcb-component-layout.png)
+
+*Exportación de distribución de componentes: dos huellas para módulos ESP32, interfaz SD y puntos de conexión. Es un dibujo de colocación de componentes, no un esquema eléctrico completo. Se conserva la orientación del dibujo fuente.*
+
+[Abrir el PDF vectorial](docs/assets/pcb-component-layout.pdf) · [Procedencia y preparación del material](docs/assets/README.md)
+
+</details>
 
 ## Recorrido de los datos
 

@@ -113,7 +113,7 @@ The evidence catalogue identifies:
 | PF05 | Final team report extracts | Historical 0–55 cm water tests, solar mechanism and energy observations. |
 | PF06 | Exterior video | An approximately 185.5-second clip sampled at four points; full audio and recording attribution remain unresolved. |
 
-These originals are not included in this documentation proposal. Images, selected report pages and video need direct inspection and suitable public versions before insertion. Historic report tests must remain distinct from newly repeated measurements.
+The visual update includes PF02 and PF03 as unchanged JPEGs, plus a public derivative of PF04 and its rendered preview. [Media provenance and preparation](assets/README.md) records the source mapping and PDF treatment. PF01, PF05 and PF06 remain outside the current public selection. The general overview photograph needs further preparation; report extracts and the video remain to be selected/reviewed. Historic report tests stay distinct from newly repeated measurements.
 
 ## Next implementation work
 
@@ -121,5 +121,5 @@ These originals are not included in this documentation proposal. Images, selecte
 2. Correct input validation, error responses, stale-state handling and tests in a separate behavior-change proposal.
 3. Separate local connection configuration from firmware source; rotate any exposed credential that is still in use.
 4. Confirm the ESP32 board configuration and obtain a successful build log.
-5. Add selected physical evidence, accurate captions and team credits.
+5. Extend the selected physical evidence when the general overview, report extracts and video are ready; retain accurate captions and team credits.
 6. Resolve dataset provenance and the license documentation referenced by the original README.

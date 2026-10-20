@@ -8,6 +8,10 @@ An academic IoT prototype that connects a water-level sensor to a web dashboard.
 
 Developed by a three-person Mechatronics Engineering team at UPIITA–IPN, from 2024 through the final defense in January 2026. Original academic title: *Sistema de detección de inundaciones con predicción inteligente y sensores IoT*.
 
+![Electronics and power integration inside the prototype enclosure](docs/assets/electronics-integration.jpg)
+
+*Team prototype: charge controller, battery, ESP32 boards, SD interface, power converters and wiring. The photograph documents the assembly; it does not establish autonomy or the software revision loaded.*
+
 ## Engineering work
 
 - **Acquisition:** an ESP32 measures a 4–20 mA sensor through a 150 Ω shunt, averages 1,000 ADC readings, and records voltage and percentage to an SD card.
@@ -24,6 +28,21 @@ Developed by a three-person Mechatronics Engineering team at UPIITA–IPN, from 
 | Collaboration | Integration work, repository publication/documentation and participation in visualization changes. |
 
 The backend/ML implementation and the main solar-tracker code and 3D support were primarily teammates' work. This repository presents the team system while identifying Emiliano's contribution.
+
+<details>
+<summary>Water-test setup and PCB component placement</summary>
+
+![Water-level sensor immersed in a laboratory test container](docs/assets/water-sensor-test.jpg)
+
+*Water-level sensor in a laboratory container. This image records a test arrangement, rather than a measured height, calibration curve or uncertainty result.*
+
+![Component-placement drawing for the prototype PCB](docs/assets/pcb-component-layout.png)
+
+*PCB component-placement export showing two ESP32 module footprints, an SD interface and connection points. This is a placement drawing, not a complete electrical schematic. The source drawing's orientation is retained.*
+
+[Open the vector PDF](docs/assets/pcb-component-layout.pdf) · [Media provenance and preparation](docs/assets/README.md)
+
+</details>
 
 ## Data path
 
