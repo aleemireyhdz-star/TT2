@@ -1,0 +1,9 @@
+# Direct dependency versions reported working in the 2026-10-20 Windows review.
+# Python 3.12.14; see docs/verification.md. This is not a full environment lock.
+# Original requirements.txt is retained as the academic snapshot's declaration.
+scikit-learn==1.7.2
+pandas==2.1.4
+numpy==1.26.4
+matplotlib==3.8.2
+flask==3.0.0
+joblib==1.3.2
