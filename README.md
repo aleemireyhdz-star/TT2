@@ -1,440 +1,99 @@
-# 🌊 Sistema de Predicción de Riesgo de Inundaciones CDMX
+# CDMX Flood Monitoring & Geographic Risk Assessment
 
-Sistema inteligente de monitoreo y predicción de riesgos de inundación para la Ciudad de México que utiliza Machine Learning para generar alertas en tiempo real basadas en datos geográficos y sensores de humedad.
+**ESP32 · 4–20 mA sensing · SD logging · Python/Flask · geographic risk scoring**
 
-## 📋 Tabla de Contenidos
+English | [Español](README.es.md)
 
-- [Características Principales](#-características-principales)
-- [Arquitectura del Sistema](#-arquitectura-del-sistema)
-- [Componentes Principales](#-componentes-principales)
-- [Instalación](#-instalación)
-- [Uso del Sistema](#-uso-del-sistema)
-- [API Endpoints](#-api-endpoints)
-- [Modelo de Machine Learning](#-modelo-de-machine-learning)
-- [Sistema de Alertas](#-sistema-de-alertas)
-- [Despliegue](#-despliegue)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
+An academic IoT prototype that connects a water-level sensor to a web dashboard. The system combines a geographic risk score with the current sensor level to display an alert.
 
-## 🚀 Características Principales
+Developed by a three-person Mechatronics Engineering team at UPIITA–IPN, from 2024 through the final defense in January 2026. Original academic title: *Sistema de detección de inundaciones con predicción inteligente y sensores IoT*.
 
-- *Predicción en Tiempo Real*: Análisis instantáneo basado en coordenadas geográficas y datos de sensores
-- *Machine Learning*: Modelo RandomForestRegressor entrenado con datos históricos de CDMX
-- *Interfaz Web Moderna*: Dashboard interactivo con mapa de Leaflet y actualizaciones en tiempo real
-- *Sistema de Alertas*: Semáforo de 3 niveles (Verde, Amarillo, Rojo) con lógica de negocio avanzada
-- *API REST*: Endpoints simples para integración con sensores IoT
-- *Validación Geográfica*: Verificación automática de coordenadas dentro del área metropolitana
-- *Configuración Persistente*: Almacenamiento de coordenadas y configuraciones
-- *Despliegue en la Nube*: Soporte para Cloudflare Tunnels y servidores de producción
+## Engineering work
 
-## 🏗️ Arquitectura del Sistema
+- **Acquisition:** an ESP32 measures a 4–20 mA sensor through a 150 Ω shunt, averages 1,000 ADC readings, and records voltage and percentage to an SD card.
+- **Integration:** HTTP telemetry connects the embedded device to a Flask API and a web dashboard with a map and alert state.
+- **Physical prototype:** the team integrated electronics, battery/solar power, an enclosure, a support structure, and a one-axis solar tracker. The final report documents water tests over 0–55 cm; these are historical team results.
 
+### Emiliano's contribution
 
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Sensor IoT    │───▶│   Flask Server   │───▶│   Dashboard     │
-│   (Arduino)     │    │   (API REST)     │    │   (Web UI)      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │
-                                ▼
-                        ┌──────────────────┐
-                        │   Realtime.py    │
-                        │  (Predicción)    │
-                        └──────────────────┘
-                                │
-                                ▼
-                        ┌──────────────────┐
-                        │ Modelo ML (.pkl) │
-                        │ (RandomForest)   │
-                        └──────────────────┘
+| Area | Contribution |
+| --- | --- |
+| Mechanical design | Main proposed support design, calculations and CAD work; assembly and adaptation of the reduced physical prototype. |
+| Electronics and integration | Initial component selection, schematics/routing, power integration, soldering, wiring and staged checks; later revisions were shared. |
+| Acquisition firmware | Initial sensor-acquisition implementation, followed by collaborative changes and final changes by a teammate. |
+| Collaboration | Integration work, repository publication/documentation and participation in visualization changes. |
 
+The backend/ML implementation and the main solar-tracker code and 3D support were primarily teammates' work. This repository presents the team system while identifying Emiliano's contribution.
 
-## 🧩 Componentes Principales
+## Data path
 
-### 1. *Flask_Server.py* - Servidor Web Principal
+```mermaid
+flowchart TD
+    S["Water-level sensor: 4–20 mA"] --> E["150 Ω shunt + ESP32"]
+    E --> D["SD: voltage, percentage, uptime"]
+    E -->|"HTTP POST /ingest"| F["Flask API"]
+    G["Geographic dataset lookup or Random Forest"] -->|"Zone score"| F
+    F -->|"GET /api/status"| W["Web dashboard"]
+```
 
-El corazón del sistema que maneja:
-- *API REST* para recepción de datos de sensores
-- *Servidor web* para el dashboard
-- *Gestión de coordenadas* persistentes
-- *Endpoints de estado* y configuración
+The geographic score uses coordinates and a project-derived dataset. The sensor voltage is classified into levels 0–3; rules combine this level with the geographic category.
 
-*Características clave:*
-- Mapeo de voltaje a nivel de sensor (0-3)
-- Almacenamiento persistente de coordenadas en JSON
-- Validación geográfica automática
-- Logging detallado para depuración
+The firmware waits **10 seconds after each cycle**, in addition to acquisition/network time. The dashboard polls every **2 seconds**. The published firmware transmits voltage and percentage, rather than a continuous water height in centimeters.
 
-python
-# Mapeo de voltaje del sensor a niveles
-if v <= 0.695:    nivel_sensor = 0  # Seco
-elif v <= 0.759:  nivel_sensor = 1  # Bajo
-elif v <= 0.812:  nivel_sensor = 2  # Medio
-else:             nivel_sensor = 3  # Alto
+## Run a local software demonstration
 
+The local review reported a working Python 3.12.14 configuration with the direct dependencies in [requirements-review-py312.txt](requirements-review-py312.txt). It differs from the original [requirements.txt](requirements.txt): NumPy is 1.26.4 and scikit-learn is 1.7.2, matching the serialized model's reported training version. It is not a complete environment lock.
 
-### 2. *Realtime.py* - Motor de Predicción
-
-Módulo especializado en:
-- *Carga del modelo* ML entrenado
-- *Validación geográfica* de coordenadas CDMX
-- *Búsqueda en dataset* para coordenadas exactas
-- *Predicción ML* para ubicaciones nuevas
-- *Lógica de alertas* combinando riesgo de zona + sensor
-
-*Funciones principales:*
-- validar_coordenadas_cdmx(): Verifica ubicación dentro de CDMX
-- obtener_riesgo_zona(): Calcula score de riesgo geográfico
-- predecir_alerta(): Genera alerta final combinando factores
-- clasificar_riesgo_zona(): Categoriza score en BAJO/MEDIO/ALTO
-
-### 3. *Modelo.py* - Entrenamiento del Modelo ML
-
-Script para crear y entrenar el modelo:
-- *Carga de datos* procesados
-- *División* entrenamiento/prueba
-- *Entrenamiento* RandomForestRegressor
-- *Evaluación* con métricas (MSE, R²)
-- *Persistencia* del modelo entrenado
-
-*Configuración del modelo:*
-python
-RandomForestRegressor(
-    n_estimators=100,    # 100 árboles
-    random_state=42,     # Reproducibilidad
-    max_depth=10         # Prevenir overfitting
-)
-
-
-### 4. *procesar_dataset.py* - Procesamiento de Datos
-
-Transforma datos categóricos a numéricos:
-- *Mapeo de rangos* de intensidad de lluvia
-- *Conversión* de porcentajes de área inundable
-- *Cálculo de score* combinado (60% intensidad + 40% área)
-- *Eliminación* de duplicados
-- *Generación* del dataset procesado
-
-## 🔧 Instalación
-
-### Requisitos Previos
-
-- Python 3.8 o superior
-- pip (gestor de paquetes de Python)
-
-### Instalación Rápida
-
-1. *Clonar el repositorio:*
-bash
-git clone <repository-url>
+```bash
+git clone https://github.com/aleemireyhdz-star/TT2.git
 cd TT2
+python -m venv .venv
+```
 
+PowerShell, with Python 3.12:
 
-2. *Instalar dependencias:*
-bash
-pip install -r requirements.txt
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-review-py312.txt
+.\.venv\Scripts\python.exe -m flask --app src/Flask_Server.py run --host 127.0.0.1 --port 5000
+```
 
+On macOS/Linux, use `.venv/bin/python` for the same install and Flask commands. Open `http://127.0.0.1:5000`. The software demo can receive example readings without an ESP32; the map uses external Leaflet/OpenStreetMap resources.
 
-3. *Procesar el dataset:*
-bash
-cd src
-python procesar_dataset.py
+Example HTTP requests, using `curl.exe` in Windows PowerShell:
 
+```bash
+curl -X POST http://127.0.0.1:5000/ingest -H "Content-Type: application/json" -d '{"v":0.78,"pct":7.5}'
+curl http://127.0.0.1:5000/api/status
+```
 
-4. *Entrenar el modelo:*
-bash
-python Modelo.py
+This example supplies a simulated reading. Its voltage maps to sensor level 2; the alert color depends on the configured zone. It does not exercise the ADC, SD card or wireless link.
 
+For physical operation, configure the board, Wi-Fi and server connection in [Sensor.ino](Sensor.ino) locally, and keep connection credentials out of future commits. Compilation for the historical board configuration remains pending.
 
-5. *Iniciar el servidor:*
-bash
-python Flask_Server.py
+## Verification and scope
 
+The **20 October 2026 local review** of academic commit `98920f9` reported:
 
-### Dependencias
+| Check | Reported result |
+| --- | --- |
+| Flask routes and voltage levels | 13 explicit level/threshold checks matched the expected levels. |
+| Re-run of the published training script | R² **0.6944**, MSE **31.1683**, RMSE **5.5829 score points**, using a 244/62 train/test split. |
+| ESP32 compilation | Blocked before compiler execution; compilation success was not established. |
 
+The model estimates a constructed geographic score. These metrics do **not** measure future-flood forecasting, probability calibration or lead time. The previous README's R²≈0.85+ was not corroborated.
 
-scikit-learn==1.3.2  # Machine Learning
-pandas==2.1.4        # Manipulación de datos
-numpy==1.24.4        # Cálculos numéricos
-matplotlib==3.8.2    # Visualización
-flask==3.0.0         # Servidor web
-joblib==1.3.2        # Serialización del modelo
+See [verification details and open issues](docs/verification.md) for environments, API edge cases, test limitations and evidence status. Browser interaction, physical telemetry and field performance were not revalidated in that review.
 
+## Explore the implementation
 
-## 📊 Uso del Sistema
+- [ESP32 acquisition](Sensor.ino)
+- [Flask API](src/Flask_Server.py)
+- [Geographic scoring and alert rules](src/Realtime.py)
+- [Dataset processing](src/procesar_dataset.py) and [model training](src/Modelo.py)
+- [Historical diagnostic scripts](tests/) — see the verification notes before interpreting their output.
 
-### 1. Inicialización
+The final report describes Atlas de Riesgos / SGIRPC / CDMX open-data material as background and the model data as synthetic/derived. The exact source export and transformation history still need documentation.
 
-bash
-cd src
-python Flask_Server.py
+## License documentation
 
-
-El servidor iniciará en http://localhost:5000
-
-### 2. Configuración de Coordenadas
-
-*Via Web UI:*
-- Acceder al dashboard
-- Usar el formulario de coordenadas
-- Las coordenadas se guardan automáticamente
-
-*Via API:*
-bash
-curl -X POST http://localhost:5000/api/coords \
-  -H "Content-Type: application/json" \
-  -d '{"lat": 19.4326, "lon": -99.1332}'
-
-
-### 3. Envío de Datos del Sensor
-
-bash
-curl -X POST http://localhost:5000/ingest \
-  -H "Content-Type: application/json" \
-  -d '{"v": 0.8, "pct": 75.5}'
-
-
-### 4. Consulta de Estado
-
-bash
-curl http://localhost:5000/api/status
-
-
-## 🌐 API Endpoints
-
-### POST /ingest
-*Descripción:* Recibe datos del sensor IoT
-*Body:*
-json
-{
-  "v": 0.8,     // Voltaje del sensor (0-3V)
-  "pct": 75.5   // Porcentaje de humedad
-}
-
-
-### GET /api/status
-*Descripción:* Obtiene el último estado de alerta
-*Response:*
-json
-{
-  "alerta": "AMARILLO",
-  "riesgo_zona": "MEDIO",
-  "riesgo_score": 58.7,
-  "nivel_sensor": 2,
-  "coordenadas": {"latitud": 19.4326, "longitud": -99.1332}
-}
-
-
-### POST /api/coords
-*Descripción:* Actualiza coordenadas del sistema
-*Body:*
-json
-{
-  "lat": 19.4326,
-  "lon": -99.1332
-}
-
-
-### GET /api/coords
-*Descripción:* Obtiene coordenadas actuales
-*Response:*
-json
-{
-  "latitud": 19.4326,
-  "longitud": -99.1332
-}
-
-
-## 🤖 Modelo de Machine Learning
-
-### Características del Modelo
-
-- *Algoritmo:* Random Forest Regressor
-- *Entradas:* Latitud y Longitud
-- *Salida:* Score de riesgo (28.5 - 80.2)
-- *Precisión:* R² Score ≈ 0.85+
-
-### Proceso de Entrenamiento
-
-1. *Preprocesamiento:*
-   - Conversión de rangos categóricos a valores numéricos
-   - Cálculo de score combinado: intensidad_mm * 0.6 + area_inundable_pct * 0.4
-
-2. *División de datos:*
-   - 80% entrenamiento
-   - 20% prueba
-
-3. *Métricas de evaluación:*
-   - Error cuadrático medio (MSE)
-   - Coeficiente de determinación (R²)
-   - Error promedio en puntos de riesgo
-
-### Mapeo de Datos Originales
-
-*Intensidad de Precipitación:*
-python
-{
-    '41 a 54': 47.5,    # BAJO
-    '54 a 60': 57.0,    # MEDIO-BAJO
-    '60 a 64': 62.0,    # MEDIO-ALTO  
-    '64 a 70': 67.0     # ALTO
-}
-
-
-*Porcentaje de Área Inundable:*
-python
-{
-    '0 a 25': 12.5,     # MUY BAJO
-    '26 a 49': 37.5,    # BAJO
-    '50 a 72': 61.0,    # MEDIO
-    '73 a 99': 86.0,    # ALTO
-    '100': 100.0        # MUY ALTO
-}
-
-
-## 🚨 Sistema de Alertas
-
-### Clasificación de Riesgo de Zona
-
-- *BAJO:* Score ≤ 45
-- *MEDIO:* Score 46-65  
-- *ALTO:* Score > 65
-
-### Lógica de Alertas
-
-La alerta final combina el riesgo geográfico con el nivel del sensor:
-
-| Riesgo Zona | Sensor 0 | Sensor 1 | Sensor 2 | Sensor 3 |
-|-------------|----------|----------|----------|----------|
-| *BAJO*    | 🟢 VERDE | 🟢 VERDE | 🟢 VERDE | 🟡 AMARILLO |
-| *MEDIO*   | 🟢 VERDE | 🟢 VERDE | 🟡 AMARILLO | 🔴 ROJO |
-| *ALTO*    | 🟢 VERDE | 🟡 AMARILLO | 🔴 ROJO | 🔴 ROJO |
-
-### Niveles de Sensor
-
-- *0:* Seco (≤ 0.695V)
-- *1:* Bajo (0.696-0.759V)
-- *2:* Medio (0.760-0.812V)
-- *3:* Alto (> 0.812V)
-
-## 🌍 Despliegue
-
-### Desarrollo Local
-
-bash
-python Flask_Server.py
-# Servidor en http://localhost:5000
-
-
-### Producción con Gunicorn
-
-bash
-pip install gunicorn
-gunicorn --bind 0.0.0.0:5000 wsgi:app
-
-
-### Cloudflare Tunnels
-
-1. *Instalar cloudflared:*
-   - Seguir guía en CLOUDFLARE_SETUP.md
-
-2. *Crear túnel:*
-bash
-cloudflared tunnel create mi-tunel-inundaciones
-
-
-3. *Configurar y ejecutar:*
-bash
-cloudflared tunnel run mi-tunel-inundaciones
-
-
-### Variables de Entorno
-
-bash
-export FLASK_ENV=production    # Modo producción
-export PORT=5000              # Puerto personalizado
-
-
-## 📁 Estructura del Proyecto
-
-
-TT2/
-├── src/                          # Código fuente principal
-│   ├── Flask_Server.py          # 🌐 Servidor web y API REST
-│   ├── Realtime.py              # 🤖 Motor de predicción ML
-│   ├── Modelo.py                # 📊 Entrenamiento del modelo
-│   ├── procesar_dataset.py      # 🔧 Procesamiento de datos
-│   ├── coords_config.json       # 📍 Coordenadas persistentes
-│   ├── Dataset - Full(Dataset).csv      # 📋 Dataset original
-│   ├── dataset_procesado.csv    # 📋 Dataset limpio y numérico
-│   ├── modelo_predictivo.pkl    # 🧠 Modelo entrenado
-│   ├── templates/               # 🎨 Templates HTML
-│   │   └── index.html          # Dashboard principal
-│   └── static/                  # 📱 Recursos estáticos
-│       ├── app.js              # JavaScript del frontend
-│       └── styles.css          # Estilos CSS
-├── tests/                       # 🧪 Pruebas y validaciones
-│   ├── prueba_final.py         # Prueba integral
-│   ├── test_coordenadas_especificas.py  # Pruebas geográficas
-│   └── README.md               # Documentación de pruebas
-├── wsgi.py                     # 🚀 Entrada para producción
-├── requirements.txt            # 📦 Dependencias Python
-├── CLOUDFLARE_SETUP.md        # ☁️ Guía de despliegue
-├── PUBLIC_SERVER_QUICKSTART.md # 🌐 Guía servidor público
-└── README.md                   # 📖 Documentación principal
-
-
-## 🧪 Pruebas
-
-### Pruebas Unitarias
-
-bash
-cd tests
-python test_coordenadas_especificas.py
-python prueba_final.py
-
-
-### Pruebas de Integración
-
-bash
-# Probar API
-curl -X POST http://localhost:5000/ingest -d '{"v":0.8,"pct":75}'
-
-# Verificar predicción
-curl http://localhost:5000/api/status
-
-
-### Pruebas de Coordenadas
-
-bash
-cd src
-python Realtime.py test
-
-
-## 🤝 Contribución
-
-1. Fork el repositorio
-2. Crear rama de feature (git checkout -b feature/nueva-caracteristica)
-3. Commit cambios (git commit -am 'Agregar nueva característica')
-4. Push a la rama (git push origin feature/nueva-caracteristica)
-5. Crear Pull Request
-
-## 📝 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo LICENSE para más detalles.
-
-## 🆘 Soporte y Contacto
-
-- *Issues:* Usar el sistema de issues de GitHub
-- *Documentación:* Ver archivos .md en el repositorio
-- *Pruebas:* Ejecutar scripts en la carpeta tests/
-
-## 🔄 Versionado
-
-- *v1.0.0:* Versión inicial con modelo ML básico
-- *v1.1.0:* Interfaz web y API REST
-- *v1.2.0:* Sistema de coordenadas persistentes
-- *v1.3.0:* Despliegue en la nube y optimizaciones
-
----
-
-Sistema desarrollado para la prevención de riesgos de inundación en la Ciudad de México utilizando tecnologías modernas de Machine Learning e IoT.
+The original README referenced MIT, but the reviewed snapshot contains no corresponding `LICENSE` file. The license text and dataset/media terms need clarification. This documentation update introduces no new license.
