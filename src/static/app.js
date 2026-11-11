@@ -58,6 +58,7 @@ function inicializarActualizaciones() {
 async function actualizarEstado() {
     try {
         const response = await fetch('/api/status');
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const datos = await response.json();
         
         // Actualizar elementos en la página
@@ -95,13 +96,14 @@ function actualizarUI(datos) {
     
     // Actualizar riesgo de zona
     document.getElementById('riesgo-zona').textContent = riesgo_zona || '--';
-    document.getElementById('riesgo-score').textContent = riesgo_score || '--';
+    document.getElementById('riesgo-score').textContent = riesgo_score ?? '--';
     
     // Actualizar semáforo
     actualizarSemaforoAlerta(alerta);
+    if (mensaje) document.getElementById('alerta-description').textContent = mensaje;
     
     // Actualizar última actualización
-    actualizarHoraUltActualizacion();
+    actualizarHoraUltActualizacion(datos.received_at);
     
     // Agregar evento al historial si hay cambio
     agregarAlHistorial(alerta, nivel_sensor, riesgo_zona, riesgo_score);
@@ -228,14 +230,14 @@ function actualizarVistaHistorial() {
     contenedor.innerHTML = html;
 }
 
-// Actualizar hora de última actualización
-function actualizarHoraUltActualizacion() {
-    const ahora = new Date();
-    const tiempo = ahora.toLocaleTimeString('es-MX', {
+// Mostrar la última recepción indicada por el servidor
+function actualizarHoraUltActualizacion(receivedAt) {
+    const lectura = receivedAt ? new Date(receivedAt) : null;
+    const tiempo = lectura && Number.isFinite(lectura.getTime()) ? lectura.toLocaleTimeString('es-MX', {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit'
-    });
+    }) : '--';
     
     document.getElementById('last-update').textContent = tiempo;
 }
@@ -248,11 +250,11 @@ function actualizarEstadoConexion(estado) {
     if (estado === 'online') {
         statusIndicator.classList.remove('offline');
         statusIndicator.classList.add('online');
-        statusText.textContent = 'En línea';
+        statusText.textContent = 'Servidor en línea';
     } else {
         statusIndicator.classList.remove('online');
         statusIndicator.classList.add('offline');
-        statusText.textContent = 'Sin conexión';
+        statusText.textContent = 'Sin conexión al servidor';
     }
 }
 

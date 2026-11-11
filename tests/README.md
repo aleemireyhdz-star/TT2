@@ -1,5 +1,16 @@
 # Tests del Sistema de Alertas de Inundación
 
+## Suite automatizada de la mejora posterior a la defensa
+
+La nueva suite utiliza las rutas Flask reales y comprobaciones explícitas. Desde la raíz del repositorio:
+
+```bash
+python -m unittest discover -s tests -p test_api_validation.py -v
+node --test tests/test_dashboard.js
+```
+
+Consulta [el contrato, entorno y alcance de las pruebas](../docs/api-validation.md). Los scripts históricos descritos a continuación conservan su carácter de diagnóstico; no se reinterpretan como pruebas automatizadas superadas.
+
 Esta carpeta contiene los archivos de prueba para validar el funcionamiento del sistema de predicción de alertas de inundación.
 
 ## Archivos de prueba:
