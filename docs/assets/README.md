@@ -6,6 +6,7 @@ These files were supplied by the project owner as evidence of the three-person t
 
 | Repository file | Supplied source | Treatment |
 | --- | --- | --- |
+| `prototype-overview.jpg` | PF01-edit.jpg | Owner-prepared edited photograph with the background person excluded; repository copy is byte-identical to that supplied version. |
 | `electronics-integration.jpg` | PF02.jpg | Original supplied JPEG bytes, renamed for the repository. |
 | `water-sensor-test.jpg` | PF03.jpg | Original supplied JPEG bytes, renamed for the repository. |
 | `pcb-component-layout.pdf` | PF04.pdf | New public copy: blank page margins trimmed and document metadata replaced to remove a private source path. Drawing content and source orientation retained. |
@@ -17,4 +18,4 @@ The source PDF's SHA-256 is `59758a7493a3b97cdae507233ece01f5f52e3a2a2b925d91065
 
 The electronics photo supports the presence of integrated boards, power hardware and wiring. The water-test photo supports the existence of a laboratory sensor setup. Neither establishes new measurements, end-to-end telemetry, autonomy, calibration accuracy or the source code flashed at the time.
 
-The broader overview photograph, final-report extracts and exterior video are not included in this selection. No additional physical tests were performed while preparing these assets, and no new license is assigned here.
+The owner-prepared overview was added on 10 November 2026. Its editing method was not specified; no additional image edits were made for this update. Final-report extracts and exterior video are not included in this selection. No additional physical tests were performed while preparing these assets, and no new license is assigned here.

@@ -30,7 +30,11 @@ Developed by a three-person Mechatronics Engineering team at UPIITA–IPN, from 
 The backend/ML implementation and the main solar-tracker code and 3D support were primarily teammates' work. This repository presents the team system while identifying Emiliano's contribution.
 
 <details>
-<summary>Water-test setup and PCB component placement</summary>
+<summary>Prototype overview, water-test setup and PCB component placement</summary>
+
+![Panel, tracker mechanism and electronics enclosure of the team prototype](docs/assets/prototype-overview.jpg)
+
+*Overview supplied by the project owner with the background person excluded. It shows the panel, tracking mechanism and open electronics enclosure; the complete base is outside the frame.*
 
 ![Water-level sensor immersed in a laboratory test container](docs/assets/water-sensor-test.jpg)
 

@@ -30,7 +30,11 @@ Desarrollado por un equipo de tres integrantes de Ingeniería Mecatrónica en UP
 El backend/modelo y el código principal y soporte 3D del seguidor fueron principalmente aportaciones de compañeros. Se presenta el sistema del equipo y se identifica la contribución de Emiliano.
 
 <details>
-<summary>Montaje de prueba con agua y distribución de componentes de PCB</summary>
+<summary>Vista del prototipo, prueba con agua y distribución de componentes de PCB</summary>
+
+![Panel, mecanismo de seguimiento y gabinete electrónico del prototipo del equipo](docs/assets/prototype-overview.jpg)
+
+*Vista proporcionada por el propietario del proyecto con la persona del fondo excluida. Muestra el panel, el mecanismo de seguimiento y el gabinete abierto; la base completa queda fuera del encuadre.*
 
 ![Sensor de nivel sumergido en un recipiente de prueba de laboratorio](docs/assets/water-sensor-test.jpg)
 
