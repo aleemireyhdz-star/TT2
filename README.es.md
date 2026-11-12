@@ -91,7 +91,9 @@ curl http://127.0.0.1:5000/api/status
 
 El ejemplo introduce una lectura simulada. El voltaje corresponde al nivel 2; el color depende de la zona configurada. No ejercita ADC, SD o comunicación inalámbrica.
 
-Para operación física, configura localmente la placa, Wi-Fi y servidor en [Sensor.ino](Sensor.ino), y evita incluir credenciales en nuevos commits. Sigue pendiente comprobar la compilación con la configuración histórica de placa.
+El prototipo original se desmanteló después de la defensa. La ubicación se configuraba manualmente (sin GPS) y los umbrales de voltaje se obtuvieron con pruebas de altura de agua sobre ese montaje. Una réplica necesita coordenadas explícitas y umbrales medidos propios; consulta las [notas bilingües de historia del prototipo y replicación](docs/replication-notes.md).
+
+Para una futura réplica física, configura localmente la placa, Wi-Fi y servidor en [Sensor.ino](Sensor.ino), y evita incluir credenciales en nuevos commits. No se han recuperado el perfil exacto de placa ni el registro histórico de compilación.
 
 ## Comprobaciones y alcance
 
@@ -106,6 +108,8 @@ La **revisión local del 20 de octubre de 2026**, sobre el commit académico `98
 El modelo estima un puntaje geográfico construido. Estas métricas **no** evalúan pronóstico de inundaciones futuras, probabilidad calibrada o anticipación. No se corroboró el R²≈0.85+ del README anterior.
 
 Consulta el [detalle de verificación y pendientes, en inglés](docs/verification.md) para los entornos, casos límite de la API, limitaciones de pruebas y estado de evidencias. La revisión no repitió interacción en navegador, telemetría física o pruebas de campo.
+
+La [mejora posterior de validación de API](docs/api-validation.md) incorpora pruebas ejecutables: **21 métodos de prueba Python con subcasos y 3 pruebas JavaScript**, aprobados en el entorno Linux registrado. Son comprobaciones de software posteriores a la defensa; no se pueden repetir pruebas físicas sobre el prototipo desmantelado.
 
 ## Explorar la implementación
 
