@@ -10,7 +10,7 @@ Desarrollado por un equipo de tres integrantes de Ingeniería Mecatrónica en UP
 
 ![Integración electrónica y de alimentación dentro del gabinete del prototipo](docs/assets/electronics-integration.jpg)
 
-*Prototipo del equipo: controlador de carga, batería, placas ESP32, interfaz SD, convertidores y cableado. La fotografía documenta el montaje; no establece autonomía ni la revisión de software cargada.*
+*Montaje electrónico y de alimentación del prototipo del equipo: controlador de carga, batería, placas ESP32, interfaz SD, convertidores y cableado.*
 
 ## Trabajo de ingeniería
 
@@ -34,15 +34,15 @@ El backend/modelo y el código principal y soporte 3D del seguidor fueron princi
 
 ![Panel, mecanismo de seguimiento y gabinete electrónico del prototipo del equipo](docs/assets/prototype-overview.jpg)
 
-*Vista proporcionada por el propietario del proyecto con la persona del fondo excluida. Muestra el panel, el mecanismo de seguimiento y el gabinete abierto; la base completa queda fuera del encuadre.*
+*Panel, mecanismo de seguimiento y gabinete electrónico abierto del prototipo de laboratorio.*
 
 ![Sensor de nivel sumergido en un recipiente de prueba de laboratorio](docs/assets/water-sensor-test.jpg)
 
-*Sensor de nivel en un recipiente de laboratorio. La imagen documenta un montaje de prueba, en lugar de una altura medida, curva de calibración o resultado de incertidumbre.*
+*Sensor de nivel sumergido en un recipiente de prueba de laboratorio.*
 
 ![Distribución de componentes de la placa del prototipo](docs/assets/pcb-component-layout.png)
 
-*Exportación de distribución de componentes: dos huellas para módulos ESP32, interfaz SD y puntos de conexión. Es un dibujo de colocación de componentes, no un esquema eléctrico completo. Se conserva la orientación del dibujo fuente.*
+*Distribución de componentes de PCB: dos huellas para módulos ESP32, interfaz SD y puntos de conexión. Es un dibujo de colocación; las notas del material detallan su procedencia.*
 
 [Abrir el PDF vectorial](docs/assets/pcb-component-layout.pdf) · [Procedencia y preparación del material](docs/assets/README.md)
 
@@ -82,7 +82,14 @@ PowerShell, utilizando Python 3.12:
 
 En macOS/Linux, utiliza `.venv/bin/python` para los mismos comandos. Abre `http://127.0.0.1:5000`. La demostración puede recibir lecturas de ejemplo sin ESP32; el mapa carga recursos externos de Leaflet/OpenStreetMap.
 
-Ejemplos HTTP; en PowerShell de Windows utiliza `curl.exe`:
+Envía una lectura simulada desde otra terminal. En PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:5000/ingest -ContentType "application/json" -Body '{"v":0.78,"pct":7.5}'
+Invoke-RestMethod -Uri http://127.0.0.1:5000/api/status
+```
+
+En una terminal de macOS/Linux:
 
 ```bash
 curl -X POST http://127.0.0.1:5000/ingest -H "Content-Type: application/json" -d '{"v":0.78,"pct":7.5}'
@@ -97,19 +104,17 @@ Para una futura réplica física, configura localmente la placa, Wi-Fi y servido
 
 ## Comprobaciones y alcance
 
-La **revisión local del 20 de octubre de 2026**, sobre el commit académico `98920f9`, reportó:
+El repositorio conserva el prototipo del equipo presentado en enero de 2026 y documenta por separado las mejoras posteriores de software.
 
-| Comprobación | Resultado reportado |
+| Evidencia | Alcance |
 | --- | --- |
-| Rutas Flask y niveles de voltaje | 13 comprobaciones explícitas de niveles/umbrales coincidieron con lo esperado. |
-| Nueva ejecución del entrenamiento publicado | R² **0.6944**, MSE **31.1683**, RMSE **5.5829 puntos del score**, con división 244/62 para entrenamiento/prueba. |
-| Compilación ESP32 | Bloqueada antes de ejecutar el compilador; no se estableció compilación exitosa. |
+| Prototipo histórico | El responsable confirma la compilación y operación física para la defensa. Las fotos y la memoria del equipo documentan el montaje y las pruebas con agua. |
+| Comprobaciones de software posteriores a la defensa | **21 métodos de prueba Python con subcasos y 3 pruebas JavaScript** aprobados en el entorno Linux registrado: validación de API, transiciones de estado y lógica de la interfaz. |
+| Revisión del modelo geográfico | La repetición del entrenamiento obtuvo **R² 0.6944** y **RMSE 5.5829 puntos del score** con la partición aleatoria documentada y el objetivo geográfico construido. |
 
-El modelo estima un puntaje geográfico construido. Estas métricas **no** evalúan pronóstico de inundaciones futuras, probabilidad calibrada o anticipación. No se corroboró el R²≈0.85+ del README anterior.
+El modelo estima un puntaje geográfico derivado por el proyecto; no cuenta con validación de campo que establezca pronóstico de inundaciones futuras, probabilidad calibrada o anticipación. El prototipo original se desmanteló, por lo que no se pueden repetir pruebas físicas sobre ese montaje. La suite automatizada reciente no cubre renderizado en navegador ni telemetría física.
 
-Consulta el [detalle de verificación y pendientes, en inglés](docs/verification.md) para los entornos, casos límite de la API, limitaciones de pruebas y estado de evidencias. La revisión no repitió interacción en navegador, telemetría física o pruebas de campo.
-
-La [mejora posterior de validación de API](docs/api-validation.md) incorpora pruebas ejecutables: **21 métodos de prueba Python con subcasos y 3 pruebas JavaScript**, aprobados en el entorno Linux registrado. Son comprobaciones de software posteriores a la defensa; no se pueden repetir pruebas físicas sobre el prototipo desmantelado.
+[Ejecutar las pruebas de software](docs/api-validation.md) · [Registro detallado de verificación](docs/verification.md) · [Supuestos de hardware y replicación](docs/replication-notes.md)
 
 ## Explorar la implementación
 

@@ -10,7 +10,7 @@ Developed by a three-person Mechatronics Engineering team at UPIITA–IPN, from 
 
 ![Electronics and power integration inside the prototype enclosure](docs/assets/electronics-integration.jpg)
 
-*Team prototype: charge controller, battery, ESP32 boards, SD interface, power converters and wiring. The photograph documents the assembly; it does not establish autonomy or the software revision loaded.*
+*Electronics and power assembly of the team prototype: charge controller, battery, ESP32 boards, SD interface, power converters and wiring.*
 
 ## Engineering work
 
@@ -34,15 +34,15 @@ The backend/ML implementation and the main solar-tracker code and 3D support wer
 
 ![Panel, tracker mechanism and electronics enclosure of the team prototype](docs/assets/prototype-overview.jpg)
 
-*Overview supplied by the project owner with the background person excluded. It shows the panel, tracking mechanism and open electronics enclosure; the complete base is outside the frame.*
+*Panel, tracking mechanism and open electronics enclosure of the laboratory prototype.*
 
 ![Water-level sensor immersed in a laboratory test container](docs/assets/water-sensor-test.jpg)
 
-*Water-level sensor in a laboratory container. This image records a test arrangement, rather than a measured height, calibration curve or uncertainty result.*
+*Water-level sensor immersed in a laboratory test container.*
 
 ![Component-placement drawing for the prototype PCB](docs/assets/pcb-component-layout.png)
 
-*PCB component-placement export showing two ESP32 module footprints, an SD interface and connection points. This is a placement drawing, not a complete electrical schematic. The source drawing's orientation is retained.*
+*PCB component placement: two ESP32 module footprints, an SD interface and connection points. This export is a placement drawing; see the media notes for source details.*
 
 [Open the vector PDF](docs/assets/pcb-component-layout.pdf) · [Media provenance and preparation](docs/assets/README.md)
 
@@ -82,7 +82,14 @@ PowerShell, with Python 3.12:
 
 On macOS/Linux, use `.venv/bin/python` for the same install and Flask commands. Open `http://127.0.0.1:5000`. The software demo can receive example readings without an ESP32; the map uses external Leaflet/OpenStreetMap resources.
 
-Example HTTP requests, using `curl.exe` in Windows PowerShell:
+Send a simulated reading from a second terminal. In PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:5000/ingest -ContentType "application/json" -Body '{"v":0.78,"pct":7.5}'
+Invoke-RestMethod -Uri http://127.0.0.1:5000/api/status
+```
+
+In a macOS/Linux shell:
 
 ```bash
 curl -X POST http://127.0.0.1:5000/ingest -H "Content-Type: application/json" -d '{"v":0.78,"pct":7.5}'
@@ -97,19 +104,17 @@ For a future physical replica, configure the board, Wi-Fi and server connection 
 
 ## Verification and scope
 
-The **20 October 2026 local review** of academic commit `98920f9` reported:
+The repository preserves the January 2026 team prototype and documents later software improvements separately.
 
-| Check | Reported result |
+| Evidence | Scope |
 | --- | --- |
-| Flask routes and voltage levels | 13 explicit level/threshold checks matched the expected levels. |
-| Re-run of the published training script | R² **0.6944**, MSE **31.1683**, RMSE **5.5829 score points**, using a 244/62 train/test split. |
-| ESP32 compilation | Blocked before compiler execution; compilation success was not established. |
+| Historical prototype | The owner confirms compilation and physical operation for the defense. Photos and the team report document the assembly and water tests. |
+| Post-defense software checks | **21 Python test methods with subtests and 3 JavaScript tests** passed in the recorded Linux environment, exercising API validation, state transitions and dashboard logic. |
+| Geographic model review | Re-running the training script gave **R² 0.6944** and **RMSE 5.5829 score points** for the documented random split and constructed geographic target. |
 
-The model estimates a constructed geographic score. These metrics do **not** measure future-flood forecasting, probability calibration or lead time. The previous README's R²≈0.85+ was not corroborated.
+The model estimates a project-derived geographic score; it has no field validation establishing future-flood forecasting, calibrated probability or lead time. The original prototype has been dismantled, so new physical tests on that assembly are unavailable. The recent automated suite does not cover browser rendering or physical telemetry.
 
-See [verification details and open issues](docs/verification.md) for environments, API edge cases, test limitations and evidence status. Browser interaction, physical telemetry and field performance were not revalidated in that review.
-
-The later [API validation update](docs/api-validation.md) adds executable regression tests: **21 Python test methods with subtests and 3 JavaScript tests**, passed on the recorded Linux environment. These are post-defense software checks; new physical tests on the dismantled prototype are unavailable.
+[Run the software checks](docs/api-validation.md) · [Detailed verification record](docs/verification.md) · [Hardware and replication assumptions](docs/replication-notes.md)
 
 ## Explore the implementation
 
