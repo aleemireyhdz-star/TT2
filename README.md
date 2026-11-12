@@ -91,7 +91,9 @@ curl http://127.0.0.1:5000/api/status
 
 This example supplies a simulated reading. Its voltage maps to sensor level 2; the alert color depends on the configured zone. It does not exercise the ADC, SD card or wireless link.
 
-For physical operation, configure the board, Wi-Fi and server connection in [Sensor.ino](Sensor.ino) locally, and keep connection credentials out of future commits. Compilation for the historical board configuration remains pending.
+The original prototype was dismantled after the defense. Its location was configured manually (no GPS), and its voltage thresholds came from water-height experiments on that assembly. A replica needs explicit coordinates and its own measured thresholds; see the bilingual [prototype history and replication notes](docs/replication-notes.md).
+
+For a future physical replica, configure the board, Wi-Fi and server connection in [Sensor.ino](Sensor.ino) locally, and keep connection credentials out of future commits. The exact historical board profile/build log has not been recovered.
 
 ## Verification and scope
 
@@ -106,6 +108,8 @@ The **20 October 2026 local review** of academic commit `98920f9` reported:
 The model estimates a constructed geographic score. These metrics do **not** measure future-flood forecasting, probability calibration or lead time. The previous README's R²≈0.85+ was not corroborated.
 
 See [verification details and open issues](docs/verification.md) for environments, API edge cases, test limitations and evidence status. Browser interaction, physical telemetry and field performance were not revalidated in that review.
+
+The later [API validation update](docs/api-validation.md) adds executable regression tests: **21 Python test methods with subtests and 3 JavaScript tests**, passed on the recorded Linux environment. These are post-defense software checks; new physical tests on the dismantled prototype are unavailable.
 
 ## Explore the implementation
 

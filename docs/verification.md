@@ -52,7 +52,9 @@ There were **13 explicit sensor-level checks**, not 13 checks covering every com
 
 The current server classifies **voltage**, not the supplied percentage. Coordinates drive geographic scoring; rainfall intensity is part of the derived dataset rather than a live weather input.
 
-### Reproduced edge cases to address
+### Reproduced edge cases in the academic snapshot
+
+The subsequent [API validation update](api-validation.md) addresses the request-validation and sample-state behaviors below. This section retains the October observations for the academic reference, rather than describing those defects as current behavior on the updated branch.
 
 - Missing, textual or malformed ingestion values can return HTTP 200/`ok:true` while leaving the previous state untouched.
 - Out-of-range values, booleans and non-finite numbers are not consistently rejected.
@@ -61,7 +63,7 @@ The current server classifies **voltage**, not the supplied percentage. Coordina
 - A coordinate change does not replace the previous alert result until another ingestion.
 - Code inspection shows no sensor-reading expiry in the current status response. The frontend refresh time reflects polling, rather than a sensor acquisition timestamp.
 
-These observations belong to the academic version; this documentation change does not repair or redefine its API behavior.
+These observations belong to the academic version. The later implementation and its executable regression suite are documented separately.
 
 ### Historical diagnostic scripts
 
@@ -98,7 +100,9 @@ Important interpretation:
 
 The local `Sensor.ino` matched the Git blob after normalizing line endings. Static inspection confirms a 150 Ω shunt, 1,000-reading average, voltage/percentage telemetry, SD logging using uptime, and a 10-second delay after each cycle. Wi-Fi reconnection can block acquisition; continuous offline sampling is not established.
 
-Arduino CLI 1.2.0 and ESP32 core 3.3.3 were located. Compilation attempts with a provisional ESP32 Dev Module profile were blocked before the compiler started by Windows error #623. The historical board profile and compiler success remain unconfirmed.
+Arduino CLI 1.2.0 and ESP32 core 3.3.3 were located. October compilation attempts with a provisional ESP32 Dev Module profile were blocked before the compiler started by Windows error #623. On 12 November, the owner confirmed that firmware compilation and physical operation had been completed for the defense. The exact historical board profile and build log have not been recovered; no new compiler success is claimed. A later isolated attempt stopped during SDK installation because temporary storage was exhausted, before C++ compilation.
+
+The owner also confirmed that the prototype was subsequently dismantled. New physical tests on that assembly are unavailable. Location was manually configured without GPS, and voltage cutoffs were selected from water-height experiments on the assembled prototype. The bilingual [replication notes](replication-notes.md) distinguish those historical setup choices from transferable calibration or a measured device position.
 
 A partial local solar-tracker sketch and a more complete text listing in the final report (AP.20) were found. Their differences do not establish which source was flashed. They have not been promoted to a recovered final firmware release.
 
@@ -115,11 +119,11 @@ The evidence catalogue identifies:
 
 The visual update includes the owner-prepared PF01-edit overview, PF02 and PF03 as unchanged JPEGs, plus a public derivative of PF04 and its rendered preview. [Media provenance and preparation](assets/README.md) records the source mapping and PDF treatment. PF05 and PF06 remain outside the current public selection; report extracts and the video remain to be selected/reviewed. Historic report tests stay distinct from newly repeated measurements.
 
-## Next implementation work
+## Remaining documentation and reproduction work
 
-1. Add the actual API-check harness, sanitized output and a complete environment record.
-2. Correct input validation, error responses, stale-state handling and tests in a separate behavior-change proposal.
+1. Retain the archived October-review harness/output when available; the later [API suite and pinned test environment](api-validation.md) provide executable checks for the new implementation.
+2. Use the separate [API validation and regression-test record](api-validation.md) for the post-defense input checks, error responses and receipt-age handling.
 3. Separate local connection configuration from firmware source; rotate any exposed credential that is still in use.
-4. Confirm the ESP32 board configuration and obtain a successful build log.
+4. If the historical ESP32 board profile/build log is recovered, document it. A future toolchain-only build would be a separate check; repeating physical tests on the dismantled prototype is unavailable and is not a prerequisite for this portfolio.
 5. Extend the selected physical evidence when report extracts and video are ready; retain accurate captions and team credits.
 6. Resolve dataset provenance and the license documentation referenced by the original README.
