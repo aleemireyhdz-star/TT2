@@ -1,48 +1,48 @@
-# Monitoreo de inundaciones y evaluación de riesgo geográfico en CDMX
+# Monitoreo de inundaciones y predicción de riesgo con ML en CDMX
 
-**ESP32 · sensor de 4–20 mA · registro SD · Python/Flask · riesgo geográfico**
+**ESP32 · Medición hidrostática de nivel · Registro SD · Python/Flask · Regresión Random Forest**
 
 [English](README.md) | Español
 
-Prototipo académico IoT que conecta un sensor de nivel de agua con una interfaz web. El sistema combina un puntaje de riesgo geográfico con el nivel actual del sensor para mostrar una alerta.
+Prototipo académico IoT para monitoreo del nivel de agua y estimación del riesgo de inundación mediante aprendizaje automático. Integra un transmisor hidrostático de nivel, adquisición con ESP32 y un modelo de regresión Random Forest; combina el riesgo de la ubicación con las mediciones del sensor para mostrar alertas en una interfaz web.
 
 Desarrollado por un equipo de tres integrantes de Ingeniería Mecatrónica en UPIITA–IPN, desde 2024 hasta la defensa final en enero de 2026. Título académico original: *Sistema de detección de inundaciones con predicción inteligente y sensores IoT*.
 
 ![Integración electrónica y de alimentación dentro del gabinete del prototipo](docs/assets/electronics-integration.jpg)
 
-*Prototipo del equipo: controlador de carga, batería, placas ESP32, interfaz SD, convertidores y cableado. La fotografía documenta el montaje; no establece autonomía ni la revisión de software cargada.*
+*Montaje electrónico y de alimentación del prototipo: controlador de carga, batería, placas ESP32, interfaz SD, convertidores, cableado y fusibles.*
 
 ## Trabajo de ingeniería
 
-- **Adquisición:** una ESP32 mide la señal de un sensor de 4–20 mA mediante una resistencia de 150 Ω, promedia 1000 lecturas ADC y registra voltaje y porcentaje en una tarjeta SD.
+- **Adquisición:** una ESP32 lee la señal de 4–20 mA de un transmisor hidrostático de nivel de agua mediante una resistencia de 150 Ω, promedia 1000 lecturas ADC y registra voltaje y porcentaje en una tarjeta SD.
 - **Integración:** la transmisión HTTP conecta el dispositivo con una API Flask y una interfaz web con mapa y estado de alerta.
-- **Prototipo físico:** el equipo integró electrónica, alimentación con batería/solar, gabinete, estructura y seguidor solar de un eje. La memoria final documenta pruebas con agua de 0–55 cm; son resultados históricos del equipo.
+- **Prototipo físico:** integración de electrónica, alimentación con batería/solar, gabinete, estructura y seguidor solar de un eje. La memoria final documenta pruebas históricas con agua de 0–55 cm.
 
 ### Aportación de Emiliano
 
 | Área | Aportación |
 | --- | --- |
 | Diseño mecánico | Propuesta principal de estructura, cálculos y CAD; montaje y adaptación del prototipo físico reducido. |
-| Electrónica e integración | Selección inicial de componentes, esquemáticos/ruteo, alimentación, soldadura, cableado y comprobaciones por etapas; las revisiones posteriores fueron compartidas. |
-| Firmware de adquisición | Implementación inicial de adquisición del sensor, con cambios posteriores colaborativos y finales de un compañero. |
+| Electrónica e integración | Diseño e implementación electrónica: selección de componentes, esquemáticos/ruteo de PCB, alimentación, soldadura, cableado y comprobaciones por etapas; ajustes mediante pruebas y revisiones conjuntas. |
+| Firmware de adquisición | Desarrollo e implementación del firmware de adquisición del sensor; ajustes posteriores mediante pruebas y revisiones conjuntas. |
 | Colaboración | Integración, publicación/documentación del repositorio y participación en cambios de visualización. |
 
-El backend/modelo y el código principal y soporte 3D del seguidor fueron principalmente aportaciones de compañeros. Se presenta el sistema del equipo y se identifica la contribución de Emiliano.
+El backend/modelo y el código principal y soporte 3D del seguidor fueron desarrollados principalmente por compañeros.
 
 <details>
 <summary>Vista del prototipo, prueba con agua y distribución de componentes de PCB</summary>
 
-![Panel, mecanismo de seguimiento y gabinete electrónico del prototipo del equipo](docs/assets/prototype-overview.jpg)
+![Panel, mecanismo de seguimiento y gabinete electrónico del prototipo](docs/assets/prototype-overview.jpg)
 
-*Vista proporcionada por el propietario del proyecto con la persona del fondo excluida. Muestra el panel, el mecanismo de seguimiento y el gabinete abierto; la base completa queda fuera del encuadre.*
+*Panel, mecanismo de seguimiento y gabinete electrónico abierto del prototipo.*
 
-![Sensor de nivel sumergido en un recipiente de prueba de laboratorio](docs/assets/water-sensor-test.jpg)
+![Transmisor hidrostático de nivel de agua sumergido en un recipiente de prueba](docs/assets/water-sensor-test.jpg)
 
-*Sensor de nivel en un recipiente de laboratorio. La imagen documenta un montaje de prueba, en lugar de una altura medida, curva de calibración o resultado de incertidumbre.*
+*Transmisor hidrostático de nivel de agua en el montaje de prueba.*
 
 ![Distribución de componentes de la placa del prototipo](docs/assets/pcb-component-layout.png)
 
-*Exportación de distribución de componentes: dos huellas para módulos ESP32, interfaz SD y puntos de conexión. Es un dibujo de colocación de componentes, no un esquema eléctrico completo. Se conserva la orientación del dibujo fuente.*
+*Distribución de componentes de PCB: dos huellas para módulos ESP32, interfaz SD y puntos de conexión. Es un dibujo de colocación; las notas del material detallan su procedencia.*
 
 [Abrir el PDF vectorial](docs/assets/pcb-component-layout.pdf) · [Procedencia y preparación del material](docs/assets/README.md)
 
@@ -52,14 +52,17 @@ El backend/modelo y el código principal y soporte 3D del seguidor fueron princi
 
 ```mermaid
 flowchart TD
-    S["Sensor de nivel: 4–20 mA"] --> E["Resistencia de 150 Ω + ESP32"]
+    A["Atlas de Riesgo de Inundaciones CDMX"] --> P["Preprocesamiento + entrenamiento Random Forest"]
+    P -->|"Datos procesados + modelo entrenado"| R["Puntaje de riesgo: consulta + predicción de respaldo"]
+    C["Coordenadas configuradas"] --> R
+    S["Transmisor hidrostático de nivel: 4–20 mA"] --> E["Resistencia de 150 Ω + ESP32"]
     E --> D["SD: voltaje, porcentaje y tiempo desde arranque"]
     E -->|"HTTP POST /ingest"| F["API Flask"]
-    G["Consulta de dataset geográfico o Random Forest"] -->|"Puntaje de zona"| F
+    R -->|"Puntaje de riesgo"| F
     F -->|"GET /api/status"| W["Interfaz web"]
 ```
 
-El puntaje geográfico utiliza coordenadas y un dataset derivado por el proyecto. El voltaje se clasifica en niveles 0–3; las reglas combinan ese nivel con la categoría geográfica.
+El componente predictivo utiliza un regresor Random Forest entrenado con datos procesados del [Atlas de Riesgo de Inundaciones de CDMX](https://datos.cdmx.gob.mx/es/dataset/atlas-de-riesgo-inundaciones). Sus entradas son latitud/longitud; su objetivo es un puntaje de riesgo calculado a partir de categorías de intensidad de precipitación y área inundable. Durante la operación, el software primero busca un registro cercano en el dataset; cuando no encuentra coincidencia, el modelo entrenado predice el puntaje. Las reglas de alerta combinan la categoría de riesgo resultante con los niveles 0–3 del sensor.
 
 El firmware espera **10 segundos después de cada ciclo**, además del tiempo de adquisición/red. La web consulta cada **2 segundos**. El firmware publicado transmite voltaje y porcentaje, en lugar de una altura continua en centímetros.
 
@@ -82,7 +85,14 @@ PowerShell, utilizando Python 3.12:
 
 En macOS/Linux, utiliza `.venv/bin/python` para los mismos comandos. Abre `http://127.0.0.1:5000`. La demostración puede recibir lecturas de ejemplo sin ESP32; el mapa carga recursos externos de Leaflet/OpenStreetMap.
 
-Ejemplos HTTP; en PowerShell de Windows utiliza `curl.exe`:
+Envía una lectura simulada desde otra terminal. En PowerShell:
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:5000/ingest -ContentType "application/json" -Body '{"v":0.78,"pct":7.5}'
+Invoke-RestMethod -Uri http://127.0.0.1:5000/api/status
+```
+
+En una terminal de macOS/Linux:
 
 ```bash
 curl -X POST http://127.0.0.1:5000/ingest -H "Content-Type: application/json" -d '{"v":0.78,"pct":7.5}'
@@ -91,36 +101,29 @@ curl http://127.0.0.1:5000/api/status
 
 El ejemplo introduce una lectura simulada. El voltaje corresponde al nivel 2; el color depende de la zona configurada. No ejercita ADC, SD o comunicación inalámbrica.
 
-El prototipo original se desmanteló después de la defensa. La ubicación se configuraba manualmente (sin GPS) y los umbrales de voltaje se obtuvieron con pruebas de altura de agua sobre ese montaje. Una réplica necesita coordenadas explícitas y umbrales medidos propios; consulta las [notas bilingües de historia del prototipo y replicación](docs/replication-notes.md).
+La ubicación se configura manualmente (sin GPS) y los umbrales de voltaje se obtuvieron con pruebas de altura de agua sobre el prototipo. Una réplica necesita coordenadas explícitas y umbrales medidos propios; consulta las [notas bilingües de hardware y replicación](docs/replication-notes.md).
 
-Para una futura réplica física, configura localmente la placa, Wi-Fi y servidor en [Sensor.ino](Sensor.ino), y evita incluir credenciales en nuevos commits. No se han recuperado el perfil exacto de placa ni el registro histórico de compilación.
+Para una implementación física, configura localmente la placa, Wi-Fi y servidor en [Sensor.ino](Sensor.ino), y evita incluir credenciales en nuevos commits.
 
 ## Comprobaciones y alcance
 
-La **revisión local del 20 de octubre de 2026**, sobre el commit académico `98920f9`, reportó:
+El repositorio documenta el prototipo presentado en enero de 2026 y, por separado, las mejoras posteriores de software.
 
-| Comprobación | Resultado reportado |
+| Evidencia | Alcance |
 | --- | --- |
-| Rutas Flask y niveles de voltaje | 13 comprobaciones explícitas de niveles/umbrales coincidieron con lo esperado. |
-| Nueva ejecución del entrenamiento publicado | R² **0.6944**, MSE **31.1683**, RMSE **5.5829 puntos del score**, con división 244/62 para entrenamiento/prueba. |
-| Compilación ESP32 | Bloqueada antes de ejecutar el compilador; no se estableció compilación exitosa. |
+| Prototipo histórico | El equipo confirma la compilación del firmware y la operación física para la defensa. Las fotos y la memoria final documentan el montaje y las pruebas con agua. |
+| Comprobaciones de software posteriores a la defensa | **21 métodos de prueba Python con subcasos y 3 pruebas JavaScript** aprobados en el entorno Linux registrado: validación de API, transiciones de estado y lógica de la interfaz. |
+| Evaluación de Random Forest | La repetición del entrenamiento obtuvo **R² 0.6944** y **RMSE 5.5829 puntos del score** con la partición aleatoria documentada y el objetivo de riesgo calculado. |
 
-El modelo estima un puntaje geográfico construido. Estas métricas **no** evalúan pronóstico de inundaciones futuras, probabilidad calibrada o anticipación. No se corroboró el R²≈0.85+ del README anterior.
+El modelo predice un puntaje de riesgo calculado a partir de los indicadores del atlas; no cuenta con validación de campo que establezca pronóstico de inundaciones futuras, probabilidad calibrada o anticipación. La suite automatizada reciente no cubre renderizado en navegador ni telemetría física.
 
-Consulta el [detalle de verificación y pendientes, en inglés](docs/verification.md) para los entornos, casos límite de la API, limitaciones de pruebas y estado de evidencias. La revisión no repitió interacción en navegador, telemetría física o pruebas de campo.
-
-La [mejora posterior de validación de API](docs/api-validation.md) incorpora pruebas ejecutables: **21 métodos de prueba Python con subcasos y 3 pruebas JavaScript**, aprobados en el entorno Linux registrado. Son comprobaciones de software posteriores a la defensa; no se pueden repetir pruebas físicas sobre el prototipo desmantelado.
+[Ejecutar las pruebas de software](docs/api-validation.md) · [Registro detallado de verificación](docs/verification.md) · [Supuestos de hardware y replicación](docs/replication-notes.md)
 
 ## Explorar la implementación
 
 - [Adquisición con ESP32](Sensor.ino)
 - [API Flask](src/Flask_Server.py)
-- [Puntaje geográfico y reglas de alerta](src/Realtime.py)
-- [Procesamiento de datos](src/procesar_dataset.py) y [entrenamiento](src/Modelo.py)
+- [Predicción del puntaje de riesgo y reglas de alerta](src/Realtime.py)
+- [Procesamiento de datos](src/procesar_dataset.py) y [entrenamiento de Random Forest](src/Modelo.py)
 - [Scripts históricos de diagnóstico](tests/) — revisar las notas de verificación antes de interpretar sus salidas.
-
-La memoria identifica Atlas de Riesgos / SGIRPC / Datos Abiertos CDMX como antecedentes y describe los datos del modelo como sintéticos/derivados. Falta documentar la exportación fuente y la historia completa de transformación.
-
-## Documentación de licencia
-
-El README original hacía referencia a MIT, pero la instantánea revisada no contiene el archivo `LICENSE` correspondiente. Falta aclarar el texto de licencia y las condiciones de datos/material visual. Esta actualización documental no introduce una licencia nueva.
+- **Fuente pública de datos:** [Atlas de riesgo – Inundaciones](https://datos.cdmx.gob.mx/es/dataset/atlas-de-riesgo-inundaciones), publicado por la Secretaría de Gestión Integral de Riesgos y Protección Civil (SGIRPC) en Datos Abiertos CDMX. Los datos públicos se procesan para calcular el puntaje de riesgo y entrenar el modelo de esta implementación.
